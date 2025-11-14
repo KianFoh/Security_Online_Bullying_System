@@ -1,6 +1,11 @@
 import axios from "axios";
 
-const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
+const runtimeOrigin =
+  typeof window !== "undefined" && window.location
+    ? window.location.origin.replace(/\/$/, "")
+    : null;
+const fallbackApiBase = runtimeOrigin ? `${runtimeOrigin}/api` : "https://localhost:5001/api";
+const BASE = process.env.REACT_APP_API_BASE_URL || fallbackApiBase;
 export const API_BASE = BASE;
 export const API_ORIGIN = BASE.replace(/\/api\/?$/, "");
 

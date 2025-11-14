@@ -44,6 +44,29 @@ flask-api-project/
 - Access the API endpoints defined in the `routes.py` file.
 - Modify the `models.py` file to define your data models as needed.
 
+## Enforcing HTTPS (TLS)
+
+TLS support is baked into `run.py` so the API can be served over HTTPS without a reverse proxy.
+
+1. Generate a certificate + private key (self-signed example):
+   ```bash
+   mkdir -p certs
+   openssl req -x509 -newkey rsa:4096 -nodes -days 825 \
+     -keyout certs/server.key \
+     -out certs/server.crt \
+     -subj "/CN=localhost"
+   ```
+2. Update `.env` with the paths:
+   ```
+   REQUIRE_HTTPS=true
+   SSL_CERT_PATH=certs/server.crt
+   SSL_KEY_PATH=certs/server.key
+   # SSL_KEY_PASSWORD= if your key is encrypted
+   ```
+3. Start the server with `python run.py`. The Flask dev server will now listen with TLS 1.2+ and refuse plaintext HTTP when `REQUIRE_HTTPS=true`. HSTS and secure-cookie flags are also enabled automatically.
+
+When terminating TLS elsewhere (NGINX, load balancer), keep `REQUIRE_HTTPS=true` so that HTTP requests are still rejected/redirected by the app.
+
 ## Contributing
 
 Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
